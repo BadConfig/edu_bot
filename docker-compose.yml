@@ -1,0 +1,43 @@
+version: '3'
+services:
+  bot:
+    image: badconfig/bot_edu
+    container_name: bot_backend
+    tty: true
+      #ports:
+      #- "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://docker:sdfjksfu2jkl45g343b@postgres1:5432/diesel_db
+      - RETAIL_CRM_API_KEY=qZPXO3WaF2LLQI3YEZHdpJLoYZxhHdzH
+    volumes:
+          - ./Bot.py:/app/Bot.py
+          - ./modules/:/app/modules/
+          - ./migrations/:/app/migrations/
+    networks:
+      - app-network
+  nginx:
+    image: nginx:1.15-alpine
+    container_name: nginx_webhook_srv
+    restart: unless-stopped
+    volumes:
+      - ./nginx/:/etc/nginx/
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+  postgres:
+    image: "postgres:9.6"
+    container_name: postgres_test
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: diesel_db
+      POSTGRES_PASSWORD: sdfjksfu2jkl45g343b
+      POSTGRES_USER: docker
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
+
